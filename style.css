@@ -1,3 +1,4 @@
+/* ===== 基本設定 ===== */
 body {
     margin: 0;
     background-color: #000;
@@ -65,6 +66,9 @@ model-viewer {
     text-align: center;
     z-index: 10;
     pointer-events: none;
+    background: transparent;
+    border-radius: 16px;
+    padding: 40px 20px;
 }
 
 .headline {
@@ -99,41 +103,44 @@ model-viewer {
     background-color: white;
     color: black;
 }
+
 /* ===== hotspot button ===== */
 .hotspot {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s;
 }
 
 .hotspot:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
-.hotspot .hidden {
+.hotspot.hidden {
     display: none;
 }
 
 /* ===== hotspot Overlay ===== */
 .hotspot-overlay {
     position: fixed;
-    bottom: 30px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
-    background: rgba(0, 0, 0, 0.75);
+    width: 320px;
+    max-width: 90vw;
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    z-index: 10;
-    transition: opacity 0.3s;
+    z-index: 20;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
 }
 
 .hotspot-overlay.hidden {
@@ -151,20 +158,20 @@ model-viewer {
     cursor: pointer;
 }
 
-/*info-panel*/
+/* ===== info-panel ===== */
 .info-panel {
-    position: absolute;      /* または fixed でもOK */
-    bottom: 20px;            /* 下からの距離 */
-    left: 20px;              /* 左からの距離 */
-    background: transparent;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.4);
     color: #fff;
     padding: 16px;
     border-radius: 8px;
     z-index: 10;
-    max-width: 400px;        /* 任意で幅制限 */
+    max-width: 400px;
 }
 
-/*AR Button*/
+/* ===== AR Button ===== */
 #ar-button {
     position: fixed;
     bottom: 5%;
@@ -174,27 +181,21 @@ model-viewer {
     background-color: #e60012;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-/* ホバー時 */
 #ar-button:hover {
     background-color: #ff001a;
     transform: translateY(-2px);
 }
 
-/* 画面幅が狭い場合の調整 */
-@media (max-width: 480px) {
-    #ar-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-        bottom: 3%;
-        right: 3%;
-    }
+/* model-viewerデフォルトARボタン非表示 */
+model-viewer::part(default-ar-button) {
+    display: none;
 }
 
 /* ===== Footer ===== */
@@ -203,7 +204,7 @@ model-viewer {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 30px;
+    height: 5vh;
     background-color: #111;
     color: #fff;
     display: flex;
@@ -221,4 +222,82 @@ model-viewer {
 @keyframes slideUp {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== レスポンシブ対応 ===== */
+@media (max-width: 1024px) {
+    .headline { font-size: 2.4rem; }
+    .subtext { font-size: 1rem; }
+    .cta-btn { padding: 10px 28px; font-size: 0.95rem; }
+
+    #ar-button {
+        bottom: 4%;
+        right: 4%;
+        padding: 10px 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 20px;
+    }
+
+    .nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .overlay {
+        width: 90vw;
+        padding: 24px 16px;
+    }
+
+    .headline { font-size: 2rem; }
+    .subtext { font-size: 1rem; }
+
+    .hotspot {
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
+    }
+
+    .info-panel {
+        left: 10px;
+        bottom: 10px;
+        padding: 10px;
+        max-width: 80vw;
+        font-size: 0.9rem;
+    }
+
+    #ar-button {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .headline { font-size: 1.8rem; }
+    .subtext { font-size: 0.95rem; }
+    .cta-btn { font-size: 0.85rem; padding: 10px 20px; }
+
+    .hotspot {
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+    }
+
+    .hotspot-overlay {
+        bottom: 15px;
+        width: 90vw;
+        padding: 12px;
+    }
+
+    #ar-button {
+        bottom: 3%;
+        right: 3%;
+        font-size: 0.85rem;
+    }
 }
