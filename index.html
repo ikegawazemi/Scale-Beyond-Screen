@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Mazda3_model-viewer</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<!-- ===== Header ===== -->
+    <header class="header">
+        <div class="logo">MAZDA</div>
+        <nav class="nav">
+            <ul>
+                <li><a href="#">グレード・価格</a></li>
+                <li><a href="#">Mazda3の特長</a></li>
+                <li><a href="#">カタログ・スペック表</a></li>
+                <li><a href="#">アクセサリー</a></li>
+            </ul>
+        </nav>
+    </header>
+
+<!-- ===== Main ===== -->
+    <main class="main">
+        <model-viewer
+            id="car-model"
+            src="./assets/mazda3.glb"
+            ios-src="./assets/mazda3.usdz"
+            alt="Mazda3 exterior model"
+            camera-controls
+            camera-orbit="0deg 75deg auto"
+            min-camera-orbit="auto 50deg auto"
+            max-camera-orbit="auto 90deg auto"
+            field-of-view="30deg"
+            shadow-intensity="1"
+            exposure="1.1"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
+            style="width:100%; height:100vh; background-color:#000;">
+    
+    <!-- ====== Hotspotボタン（モデル上の位置） ====== -->
+            <button slot="hotspot-1"
+            class="hotspot"
+            data-position="0.7m 0.4m 1.2m"
+            data-normal="0m 1m 0m"
+            data-info="フロントライト：シャープな造形で精悍な印象を演出。"
+            data-min-angle="315"
+            data-max-angle="45">
+            ⓘ
+            </button>
+    
+            <button slot="hotspot-2"
+            class="hotspot"
+            data-position="-0.8m 0.6m -1.2m"
+            data-normal="0m 1m 0m"
+            data-info="リアデザイン：魂動デザインを象徴する美しい造形。">
+            ⓘ
+            </button>
+        </model-viewer>
+    <!-- === イントロオーバーレイ === -->
+        <div class="overlay" id="intro-overlay">
+            <h1 class="headline">MAZDA 3</h1>
+            <p class="subtext">毎日を、光り輝く、美しいものへとしてゆく。</p>
+            <button class="cta-btn">詳しく見る</button>
+        </div>
+    
+    <!-- ====== オーバーレイ情報パネル ====== -->
+        <div id="hotspot-overlay" class="hotspot-overlay hidden">
+            <h3 id="overlay-title">詳細情報</h3>
+            <p id="overlay-text">ここに説明が入ります。</p>
+            <button id="overlay-close">閉じる</button>
+        </div>
+
+    <!-- === インフォパネル === -->
+        <div id="info-panel" class="info-panel">
+            <h2 id="info-title">サイドビュー</h2>
+            <p id="info-text">全長: 4460mm</p>
+        </div>
+    
+    <!-- === ARボタン === -->
+        <button id="ar-button">
+            ARで見る
+        </button>
+    </main>
+
+<!-- ===== Footer ===== -->
+    <footer class="footer">
+        <p>© 2025 Mazda Motor Corporation. All rights reserved.</p>
+    </footer>
+    <script src="main.js"></script>
+</body>
+</html>
