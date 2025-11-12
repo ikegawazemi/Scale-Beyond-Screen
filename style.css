@@ -12,7 +12,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    height: 70px;
+    height: 10%;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
@@ -127,48 +127,61 @@ model-viewer {
 /* ===== hotspot Overlay ===== */
 .hotspot-overlay {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 10%;
+    left: 0;
     width: 320px;
-    max-width: 90vw;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    z-index: 20;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(8px);
+    height: calc(100vh - 70px);
+    background: rgba(15, 15, 15, 0.95);
+    color: #fff;
+    padding: 2rem;
+    box-sizing: border-box;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 50;
 }
 
-.hotspot-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
+.hotspot-overlay.active {
+    transform: translateX(0);
+}
+
+.hidden {
+    display: none;
 }
 
 #overlay-close {
-    margin-top: 10px;
-    background: #fff;
-    color: #000;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+    color: white;
+    font-size: 1.2rem;
     cursor: pointer;
-}
+    }
+
 
 /* ===== info-panel ===== */
 .info-panel {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0,0,0,0.4);
+    position: fixed;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
     color: #fff;
-    padding: 16px;
-    border-radius: 8px;
+    width: 300px; /* ✅ 固定幅を指定 */
+    height: 40px; /* ✅ 高さも固定にして安定化 */
+    line-height: 40px; /* ✅ 垂直中央寄せ */
+    text-align: center; /* ✅ テキスト中央寄せ */
+    border-radius: 20px;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    white-space: nowrap; /* ✅ 折り返し禁止 */
+    overflow: hidden; /* ✅ 溢れた文字を非表示（可） */
+    text-overflow: ellipsis; /* ✅ 溢れたら「…」で省略 */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
     z-index: 10;
-    max-width: 400px;
 }
 
 /* ===== AR Button ===== */

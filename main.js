@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modelViewer = document.getElementById("car-model");
     const infoTitle = document.getElementById("info-title");
     const infoText = document.getElementById("info-text");
-    const arButton = document.querySelector('#ar-button');
+    const arButton = document.querySelector("#ar-button");
 
     const navLinks = document.querySelectorAll("nav a");
 
@@ -62,15 +62,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== ホットスポットクリック =====
     hotspots.forEach(btn => {
         btn.addEventListener("click", () => {
-            overlayTitle.textContent = "詳細情報";
-            overlayText.textContent = btn.dataset.info;
+            const info = btn.dataset.info || "詳細情報がありません。";
+            const isSafety = btn.classList.contains("hotspot-safety");
+
+            overlayTitle.textContent = isSafety ? "安全装備" : "デザイン特徴";
+            overlayText.textContent = info;
+            overlayText.innerHTML = btn.dataset.info;
+
+            // オーバーレイを左からスライド表示
             hotspotOverlay.classList.remove("hidden");
+            hotspotOverlay.classList.add("active");
         });
     });
 
     // ===== 詳細オーバーレイ閉じる =====
     overlayClose.addEventListener("click", () => {
-        hotspotOverlay.classList.add("hidden");
+        hotspotOverlay.classList.remove("active");
+        setTimeout(() => {
+            hotspotOverlay.classList.add("hidden");
+        }, 300); // アニメーション時間と同期
     });
 
     // ===== カメラ角度による info-panel 更新 =====
@@ -86,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
         start = (start + 360) % 360;
         end = (end + 360) % 360;
         thetaDeg = (thetaDeg + 360) % 360;
-
         if (start < end) {
             return thetaDeg >= (start - margin) && thetaDeg < (end + margin);
         } else {
@@ -98,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (infoPanel.style.display === "none") return;
         let thetaDeg = modelViewer.getCameraOrbit().theta * (180 / Math.PI);
         thetaDeg = ((thetaDeg % 360) + 360) % 360;
-
         for (const view of views) {
             const [start, end] = view.range;
             if (inRange(thetaDeg, start, end)) {
@@ -112,17 +120,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== ホットスポットの表示/非表示更新 =====
     function updateHotspots() {
         if (infoPanel.style.display === "none") return;
-
         let thetaDeg = modelViewer.getCameraOrbit().theta * (180 / Math.PI);
         thetaDeg = ((thetaDeg % 360) + 360) % 360;
-
         models[currentMode].hotspots.forEach(btn => {
             let minAngle = parseFloat(btn.dataset.minAngle);
             let maxAngle = parseFloat(btn.dataset.maxAngle);
-
             minAngle = ((minAngle % 360) + 360) % 360;
             maxAngle = ((maxAngle % 360) + 360) % 360;
-
             if (minAngle < maxAngle) {
                 btn.style.display = (thetaDeg >= minAngle && thetaDeg <= maxAngle) ? "block" : "none";
             } else {
@@ -142,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
         link.addEventListener("click", (e) => {
             e.preventDefault();
             const text = e.target.textContent.trim();
-
             if (text.includes("Overview")) {
                 switchModel("normal");
             } else if (text.includes("安全装備")) {
@@ -152,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ===== ARボタン =====
-    arButton.addEventListener('click', () => {
+    arButton.addEventListener("click", () => {
         modelViewer.activateAR();
     });
 
