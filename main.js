@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const navLinks = document.querySelectorAll("nav a");
 
+    const audioEngineStart = document.getElementById("audio-engine-start");
+
     const audioElements = {
         "bgm-front": document.getElementById("bgm-front"),
         "bgm-side-r": document.getElementById("bgm-side-r"),
@@ -59,6 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== 「詳しく見る」ボタン =====
     ctaBtn.addEventListener("click", () => {
+        if (audioEngineStart) {
+            audioEngineStart.play().catch(e => console.log("Audio play blocked", e));
+        }
         introOverlay.classList.add("fade-out");
         setTimeout(() => {
             introOverlay.style.display = "none";
