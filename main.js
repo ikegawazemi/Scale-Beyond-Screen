@@ -17,6 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const navLinks = document.querySelectorAll("nav a");
 
+    const audioElements = {
+        "bgm-front": document.getElementById("bgm-front"),
+        "bgm-side-r": document.getElementById("bgm-side-r"),
+        "bgm-rear": document.getElementById("bgm-rear"),
+        "bgm-side-l": document.getElementById("bgm-side-l")
+    };
+    let currentAudioId = null;
+
     // ===== 初期状態 =====
     hotspots.forEach(btn => btn.style.display = "none");
     infoPanel.style.display = "none";
@@ -85,10 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== カメラ角度による info-panel 更新 =====
     const views = [
-        { range: [315, 45], title: "サイドビュー", text: "全長: 4460mm" },
-        { range: [45, 135], title: "リアビュー", text: "全幅: 1795mm" },
-        { range: [135, 225], title: "サイドビュー", text: "全長: 4460mm" },
-        { range: [225, 315], title: "フロントビュー", text: "全幅: 1795mm" }
+        { range: [315, 45], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-r" },
+        { range: [45, 135], title: "リアビュー", text: "全幅: 1795mm", audioId: "bgm-front" },
+        { range: [135, 225], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-l" },
+        { range: [225, 315], title: "フロントビュー", text: "全幅: 1795mm", audioId: "bgm-rear" }
     ];
 
     function inRange(thetaDeg, start, end) {
@@ -112,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (inRange(thetaDeg, start, end)) {
                 infoTitle.textContent = view.title;
                 infoText.textContent = view.text;
+                updateBGM(view.audioId);
                 break;
             }
         }
@@ -133,6 +142,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.style.display = (thetaDeg >= minAngle || thetaDeg <= maxAngle) ? "block" : "none";
             }
         });
+    }
+
+    // BGM切り替え関数
+    function updateBGM(targetAudioId) {
+        if (currentAudioId === targetAudioId) return;
+
+    // 全ての音を止める（またはフェードアウトさせる）
+        Object.values(audioElements).forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0; // 最初に戻す場合
+        });
+
+    // ターゲットの音を再生
+        const targetAudio = audioElements[targetAudioId];
+        if (targetAudio) {
+            targetAudio.play().catch(e => console.log("User interaction required for audio"));
+            currentAudioId = targetAudioId;
+        }
     }
 
     // ===== 定期更新 =====
