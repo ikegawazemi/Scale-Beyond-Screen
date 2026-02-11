@@ -60,6 +60,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== 「詳しく見る」ボタン =====
     ctaBtn.addEventListener("click", () => {
+        Object.values(audioElements).forEach(a => {
+                    if (a) {
+                        a.muted = true; // 一旦ミュート
+                        a.play().then(() => {
+                            a.pause();
+                            a.muted = false; // 解除
+                        }).catch(()=>{});
+                    }
+                });
         if (audioEngineStart) {
             audioEngineStart.play().catch(e => console.log("Audio play blocked", e));
         }
@@ -155,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 1. 既に再生中のBGMと同じ、またはIDが未定義なら何もしない
         if (!targetAudioId || currentAudioId === targetAudioId) return;
 
-        // 2. すべてのBGMを停止（bgmsオブジェクトが定義されている前提）
+        // 2. すべてのBGMを停止（audioElementsオブジェクトが定義されている前提）
         Object.values(audioElements).forEach(audio => {
             if (audio) {
                 audio.pause();
@@ -175,9 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ===== 定期更新 =====
+    modelViewer.addEventListener("camera-change", updateStatus);
+
     setInterval(() => {
         updateInfoPanel();
         updateHotspots();
+        updateBGM();
     }, 50);
 
     // ===== ナビバー切り替え =====
