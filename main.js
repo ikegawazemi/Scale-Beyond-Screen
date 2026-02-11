@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "bgm-rear": document.getElementById("bgm-rear"),
         "bgm-side-l": document.getElementById("bgm-side-l")
     };
-    let currentAudioId = null;
 
     // ===== 初期状態 =====
     hotspots.forEach(btn => btn.style.display = "none");
@@ -98,11 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== カメラ角度による info-panel 更新 =====
     const views = [
-        { range: [315, 45], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-r" },
-        { range: [45, 135], title: "リアビュー", text: "全幅: 1795mm", audioId: "bgm-front" },
-        { range: [135, 225], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-l" },
-        { range: [225, 315], title: "フロントビュー", text: "全幅: 1795mm", audioId: "bgm-rear" }
+        { range: [315, 45], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-r"},
+        { range: [45, 135], title: "リアビュー", text: "全幅: 1795mm", audioId: "bgm-front"},
+        { range: [135, 225], title: "サイドビュー", text: "全長: 4460mm", audioId: "bgm-side-l"},
+        { range: [225, 315], title: "フロントビュー", text: "全幅: 1795mm", audioId: "bgm-rear"}
     ];
+    let currentAudioId = null;
+
 
     function inRange(thetaDeg, start, end) {
         const margin = 1;
@@ -149,20 +150,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // BGM切り替え関数
+    // ==== BGM切り替え関数 ====
     function updateBGM(targetAudioId) {
-        if (currentAudioId === targetAudioId) return;
+        // 1. 既に再生中のBGMと同じ、またはIDが未定義なら何もしない
+        if (!targetAudioId || currentAudioId === targetAudioId) return;
 
-    // 全ての音を止める（またはフェードアウトさせる）
+        // 2. すべてのBGMを停止（bgmsオブジェクトが定義されている前提）
         Object.values(audioElements).forEach(audio => {
-            audio.pause();
-            audio.currentTime = 0; // 最初に戻す場合
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
         });
 
-    // ターゲットの音を再生
+        // 3. 対象のBGMを再生
         const targetAudio = audioElements[targetAudioId];
         if (targetAudio) {
-            targetAudio.play().catch(e => console.log("User interaction required for audio"));
+            targetAudio.play().catch(e => {
+                // 自動再生ブロック対策：ユーザー操作前はコンソール出力のみ
+                console.warn("Audio play blocked until user interaction.");
+            });
             currentAudioId = targetAudioId;
         }
     }
