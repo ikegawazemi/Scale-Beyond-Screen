@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function switchModel(mode) {
         if (mode === currentMode) return;
         currentMode = mode;
+        modelViewer.setAttribute("src", models[mode].src);
 
         // モデル切り替え
         modelViewer.setAttribute("src", models[mode].src);
@@ -67,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             introOverlay.style.display = "none";
             infoPanel.style.display = "block";
-            updateHotspots();
+            syncAll();
         }, 600);
     });
 
@@ -117,69 +118,50 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function updateInfoPanel() {
-        if (infoPanel.style.display === "none") return;
-        let thetaDeg = modelViewer.getCameraOrbit().theta * (180 / Math.PI);
-        thetaDeg = ((thetaDeg % 360) + 360) % 360;
-        for (const view of views) {
-            const [start, end] = view.range;
-            if (inRange(thetaDeg, start, end)) {
-                infoTitle.textContent = view.title;
-                infoText.textContent = view.text;
-                updateBGM(view.audioId);
-                break;
+    function syncAll() {
+            if (infoPanel.style.display === "none") return;
+
+            // 現在の角度を取得
+            const orbit = modelViewer.getCameraOrbit();
+            let thetaDeg = orbit.theta * (180 / Math.PI);
+            thetaDeg = ((thetaDeg % 360) + 360) % 360;
+
+            // A. BGMとパネルの更新
+            for (const view of views) {
+                if (inRange(thetaDeg, view.range[0], view.range[1])) {
+                    document.getElementById("info-title").textContent = view.title;
+                    document.getElementById("info-text").textContent = view.text;
+                    
+                    // BGMの切り替え
+                    if (currentAudioId !== view.audioId) {
+                        Object.values(audioElements).forEach(audio => { if(audio){ audio.pause(); audio.currentTime = 0; } });
+                        if (audioElements[view.audioId]) {
+                            audioElements[view.audioId].play().catch(() => {});
+                            currentAudioId = view.audioId;
+                        }
+                    }
+                    break;
+                }
             }
-        }
-    }
 
-    // ===== ホットスポットの表示/非表示更新 =====
-    function updateHotspots() {
-        if (infoPanel.style.display === "none") return;
-        let thetaDeg = modelViewer.getCameraOrbit().theta * (180 / Math.PI);
-        thetaDeg = ((thetaDeg % 360) + 360) % 360;
-        models[currentMode].hotspots.forEach(btn => {
-            let minAngle = parseFloat(btn.dataset.minAngle);
-            let maxAngle = parseFloat(btn.dataset.maxAngle);
-            minAngle = ((minAngle % 360) + 360) % 360;
-            maxAngle = ((maxAngle % 360) + 360) % 360;
-            if (minAngle < maxAngle) {
-                btn.style.display = (thetaDeg >= minAngle && thetaDeg <= maxAngle) ? "block" : "none";
-            } else {
-                btn.style.display = (thetaDeg >= minAngle || thetaDeg <= maxAngle) ? "block" : "none";
-            }
-        });
-    }
+            // B. ホットスポットの表示更新
+            hotspots.forEach(btn => {
+                const isActiveMode = Array.from(models[currentMode].hotspots).includes(btn);
 
-    // ==== BGM切り替え関数 ====
-    function updateBGM(targetAudioId) {
-        // 1. 既に再生中のBGMと同じ、またはIDが未定義なら何もしない
-        if (!targetAudioId || currentAudioId === targetAudioId) return;
-
-        // 2. すべてのBGMを停止（audioElementsオブジェクトが定義されている前提）
-        Object.values(audioElements).forEach(audio => {
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        });
-
-        // 3. 対象のBGMを再生
-        const targetAudio = audioElements[targetAudioId];
-        if (targetAudio) {
-            targetAudio.play().catch(e => {
-                // 自動再生ブロック対策：ユーザー操作前はコンソール出力のみ
-                console.warn("Audio play blocked until user interaction.");
+                    if (!isActiveMode) {
+                        btn.style.display = "none";
+                        return;
+                    }
+                // 角度チェック
+                const min = parseFloat(btn.dataset.minAngle);
+                const max = parseFloat(btn.dataset.maxAngle);
+                btn.style.display = inRange(thetaDeg, min, max) ? "block" : "none";
             });
-            currentAudioId = targetAudioId;
         }
-    }
 
-    // ===== 定期更新 =====
-    setInterval(() => {
-        updateInfoPanel();
-        updateHotspots();
-        updateBGM();
-    }, 50);
+    // ===== 更新 =====
+    modelViewer.addEventListener("camera-change", syncAll);
+    setInterval(syncAll, 150)
 
     // ===== ナビバー切り替え =====
     navLinks.forEach(link => {
