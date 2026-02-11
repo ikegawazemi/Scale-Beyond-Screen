@@ -61,6 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== 「詳しく見る」ボタン =====
     ctaBtn.addEventListener("click", () => {
+        Object.values(audioElements).forEach(audio => {
+            if (audio) {
+                // 一瞬再生してすぐ停止（これでモバイルの制限が解除される）
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(e => console.log("Unlock failed", e));
+            }
+        });
         if (audioEngineStart) {
             audioEngineStart.play().catch(e => console.log("Audio play blocked", e));
         }
@@ -134,7 +143,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     // BGMの切り替え
                     if (currentAudioId !== view.audioId) {
-                        Object.values(audioElements).forEach(audio => { if(audio){ audio.pause(); audio.currentTime = 0; } });
+                        console.log("Switching audio to:", view.audioId);//for debug
+                        Object.values(audioElements).forEach(audio => { 
+                            if(audio){
+                                audio.pause(); //audio.currentTime = 0; //
+                            } 
+                        });
                         if (audioElements[view.audioId]) {
                             audioElements[view.audioId].play().catch(() => {});
                             currentAudioId = view.audioId;
