@@ -60,15 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== 「詳しく見る」ボタン =====
     ctaBtn.addEventListener("click", () => {
-        Object.values(audioElements).forEach(a => {
-                    if (a) {
-                        a.muted = true; // 一旦ミュート
-                        a.play().then(() => {
-                            a.pause();
-                            a.muted = false; // 解除
-                        }).catch(()=>{});
-                    }
-                });
         if (audioEngineStart) {
             audioEngineStart.play().catch(e => console.log("Audio play blocked", e));
         }
@@ -184,8 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ===== 定期更新 =====
-    modelViewer.addEventListener("camera-change", updateStatus);
-
     setInterval(() => {
         updateInfoPanel();
         updateHotspots();
